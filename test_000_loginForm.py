@@ -87,9 +87,22 @@ class TestLoginForm(unittest.TestCase):
         self.assertFalse(self.email_error.is_displayed())
 
     # Тест на корректный логин (email), но неверный пароль
-    def test_040_login_with_valid_login_and_empty_password(self):
+    def test_040_login_with_valid_login_and_wrong_password(self):
         self.input_login.send_keys(test_data.VALID_LOGIN)
-        self.input_password.send_keys(test_data.INVALID_PASSWORD)
+        self.input_password.send_keys(test_data.WRONG_PASSWORD)
+        # click по кнопке "Войти"
+        self.enter_button.click()
+        # Должно быть отображено сообщение об ошибке пароля или email
+        # Здесь появляется ранее не существовавший div,
+        # приходится искать его отдельно.
+        self.assertIn("Неверный логин или пароль",
+                      d.find_element_by_class_name("red").text)
+        self.assertTrue(d.find_element_by_class_name("red").is_displayed())
+
+    # Тест на корректный незарегистрированный логин (email) с валидным паролем
+    def test_050_login_with_unreg_email_and_valid_password(self):
+        self.input_login.send_keys(test_data.VALID_LOGIN_NO_REGISTERED)
+        self.input_password.send_keys(test_data.WRONG_PASSWORD)
         # click по кнопке "Войти"
         self.enter_button.click()
         # Должно быть отображено сообщение об ошибке пароля или email
@@ -100,11 +113,11 @@ class TestLoginForm(unittest.TestCase):
         self.assertTrue(d.find_element_by_class_name("red").is_displayed())
 
     # Логинимся валидным пользователем и выходим
-    def test_090_login_valid_user(self):
+    def test_090_login_registered_user(self):
         # self.input_login = d.find_element_by_name("session[login]")
         # self.input_password = d.find_element_by_name("session[password]")
         self.input_login.send_keys(test_data.VALID_LOGIN)
-        self.input_password.send_keys(test_data.INVALID_PASSWORD)
+        self.input_password.send_keys(test_data.WRONG_PASSWORD)
         # click по кнопке "Войти"
         self.enter_button.click()
         # Условие успешного входа мне не известно
